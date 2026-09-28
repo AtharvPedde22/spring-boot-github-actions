@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.util.List;
 
@@ -54,15 +55,29 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$.name").value("Atharv"));
     }
 
-    @Test
+    @@Test
     void shouldAddEmployee() throws Exception {
-        Employee employee = new Employee(3L, "Priya", "DevOps", 55000);
-        when(employeeService.addEmployee(employee)).thenReturn(employee);
 
-        mockMvc.perform(post("/api/employees")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(employee)))
+        Employee employee =
+                new Employee(
+                        3L,
+                        "Priya",
+                        "DevOps",
+                        55000
+                );
+
+        when(employeeService.addEmployee(any(Employee.class)))
+                .thenReturn(employee);
+
+        mockMvc.perform(
+                        post("/api/employees")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        objectMapper.writeValueAsString(employee)
+                                )
+                )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Priya"));
+                .andExpect(jsonPath("$.name")
+                        .value("Priya"));
     }
 }
